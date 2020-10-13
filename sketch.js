@@ -1,10 +1,12 @@
 let miniSong;
 let oldMillis;
 let button;
-let noteButton;
 let monoSynth;
 let interval = 5;
 let allowPlay = true;
+let clearIntervalRef;
+let startTime;
+let timeRemaining = 5;
 
 function changeBG() {
   let valR = random(255);
@@ -19,14 +21,17 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(600,800);
+  createCanvas(400,200);
   background(0);
-  button = createButton('click me');
-  button.position(19,19);
-  button.mousePressed(playSong);
-  noteButton = createButton('play note');
-  noteButton.position(50, 50);
-  noteButton.mousePressed(playNote);
+  button = [createButton('group 1: M'), createButton('group 2: MT'), createButton('group 3: T'), createButton('group 4: NA'), createButton('reset')];
+  positions = [[20, 20], [150, 20], [20, 60], [150, 60], [100, 120]];
+  buttonCalls = [musicOnly, musicAndInterval, intervalOnly, doNothing, reset];
+  for (var i = 0; i < 5; i++) {
+    var x = positions[i][0];
+    var y = positions[i][1];
+    button[i].position(x, y);
+    button[i].mousePressed(buttonCalls[i]);
+  }
   
   miniSong.loop();
   miniSong.pause();
@@ -34,26 +39,65 @@ function setup() {
   monoSynth = new p5.MonoSynth();
   oldMillis = 0;
 }
-
+let started = false;
 function draw() {
   background(0);
   fill(200);
-  text("" + int(millis() / 1000), 200, 200);
-  if (int(millis() / 1000) % interval == 0 && millis() >  1000) {
-    if (allowPlay) {
-      playNote();
-    }
-    allowPlay = false;
-  }
-  if (int(millis() / 1000) % interval + 1 == 0) {
-    allowPlay = true;
-  }
   
+  if (started && timeRemaining < 5 && timeRemaining > 0) {
+    timeRemaining = 5 - (millis() - startTime) / 1000;
+    text("You have " + int(timeRemaining) + " seconds to get into position", 45, 100);
+  } else if (!started && timeRemaining == 5) {
+    text("Please press the button that corresponds to your group", 45, 100);
+  } else if (timeRemaining <= 0 && started) {
+    text("Press reset as needed", 45, 100);
+  }
+}
+
+// Function for setting music delay by 5 seconds
+function musicOnly() {
+  startTime = millis();
+  started = true;
+  timeRemaining = 4.99;
+  setTimeout(playSong, 5000);
+}
+
+// Function to delay setting interval by 5 seconds
+function intervalOnly() {
+  startTime = millis();
+  started = true;
+  timeRemaining = 4.99;
+  setTimeout(playInterval, 5000);
+}
+
+function playSong() {
+  miniSong.play();
+}
+
+function playInterval() {
+  clearIntervalRef = setInterval(playNote, 15000);
+}
+
+function musicAndInterval() {
+  musicOnly();
+  intervalOnly();
+}
+
+
+function reset() {
+  clearInterval(clearIntervalRef);
+  miniSong.stop();
+  timeRemaining = 5;
+  started = false;
+}
+
+function doNothing() {
+  // Does what it says.
 }
 
 function playNote() {
   let note = 'Fb4';
-  let velocity = 0.7;
+  let velocity = 0.9;
   let time = 0;
   let dur = 1/4;
   monoSynth.play(note, velocity, time, dur);

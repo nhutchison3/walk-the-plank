@@ -92,12 +92,14 @@ function reset() {
 }
 
 function doNothing() {
-  // Does what it says.
+  startTime = millis();
+  started = true;
+  timeRemaining = 4.99;
 }
 
 function playNote() {
-  let note = 'Fb4';
-  let velocity = 0.9;
+  let note = 'C5';
+  let velocity = 1.0;
   let time = 0;
   let dur = 1/4;
   monoSynth.play(note, velocity, time, dur);

@@ -23,10 +23,10 @@ function preload() {
 function setup() {
   createCanvas(400,200);
   background(0);
-  button = [createButton('group 1: M'), createButton('group 2: MT'), createButton('group 3: T'), createButton('group 4: NA'), createButton('reset')];
+  button = [createButton('group 1: M'), createButton('group 2: MT'), createButton('group 3: T'), createButton('group 4: NA'), createButton('reset'), createButton('test single beep')];
   positions = [[20, 20], [150, 20], [20, 60], [150, 60], [100, 120]];
-  buttonCalls = [musicOnly, musicAndInterval, intervalOnly, doNothing, reset];
-  for (var i = 0; i < 5; i++) {
+  buttonCalls = [musicOnly, musicAndInterval, intervalOnly, doNothing, reset, playNote];
+  for (var i = 0; i < buttonCalls.length; i++) {
     var x = positions[i][0];
     var y = positions[i][1];
     button[i].position(x, y);
@@ -98,7 +98,7 @@ function doNothing() {
 }
 
 function playNote() {
-  let note = 'C5';
+  let note = 'C4';
   let velocity = 1.0;
   let time = 0;
   let dur = 1/4;
